@@ -1,6 +1,8 @@
 package br.com.southsystem.desafiobackvotos.service.impl;
 
+import br.com.southsystem.desafiobackvotos.exception.InternalServerErrorException;
 import br.com.southsystem.desafiobackvotos.model.Pauta;
+import br.com.southsystem.desafiobackvotos.model.types.ErrorTypes;
 import br.com.southsystem.desafiobackvotos.model.types.VotoType;
 import br.com.southsystem.desafiobackvotos.repository.PautaRepository;
 import br.com.southsystem.desafiobackvotos.repository.VotoRepository;
@@ -33,19 +35,23 @@ public class PautaServiceImpl implements PautaService {
     //Nova consulta para recuperar lista de votos
     private void close(Long id) {
         repository.save(
-                repository.findById(id).map(pauta -> {
-                    pauta.setQtdSim(this.contarVotos(pauta, VotoType.SIM));
-                    pauta.setQtdNao(this.contarVotos(pauta, VotoType.NAO));
-                    pauta.setDataFim(LocalDateTime.now());
+            repository.findById(id).map(pauta -> {
+                pauta.setQtdSim(this.contarVotos(pauta, VotoType.SIM));
+                pauta.setQtdNao(this.contarVotos(pauta, VotoType.NAO));
+                pauta.setDataFim(LocalDateTime.now());
 
-                    return pauta;
-                }).orElseThrow()
+                return pauta;
+            }).orElseThrow(() ->
+                new InternalServerErrorException(ErrorTypes.ERRO_ENCERRAR_PAUTA.getValue())
+            )
         );
     }
 
     @Override
-    public Pauta find(Long id) throws Exception {
-        return repository.findById(id).orElseThrow(() -> new Exception("Pauta não cadastrada"));
+    public Pauta find(Long id) {
+        return repository.findById(id).orElseThrow(() ->
+            new InternalServerErrorException(ErrorTypes.PAUTA_NAO_CADASTRADA.getValue())
+        );
     }
 
     @Async
@@ -54,9 +60,9 @@ public class PautaServiceImpl implements PautaService {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
         scheduler.schedule(() ->
-                this.close(pauta.getId()),
-                pauta.getTempoSessao(),
-                TimeUnit.MINUTES
+            this.close(pauta.getId()),
+            pauta.getTempoSessao(),
+            TimeUnit.MINUTES
         );
 
         scheduler.shutdown();

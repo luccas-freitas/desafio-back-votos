@@ -16,3 +16,4 @@ spring:
     port: 5672
     username: geoinfra
     password: geoinfra
+integration.cpf.baseUrl: https://user-info.herokuapp.com/users
