@@ -26,11 +26,11 @@ public class VotoServiceImpl implements VotoService {
     }
 
     @Override
-    public void votar(VotoCommand command) throws Exception {
+    public Voto votar(VotoCommand command) throws Exception {
         Pauta pauta = pautaService.find(command.getPautaId());
 
         if (this.podeVotar(command, pauta)) {
-            repository.save(Voto.from(command, pauta));
+            return repository.save(Voto.from(command, pauta));
         } else {
             throw new InternalServerErrorException(ErrorTypes.ASSOCIADO_JA_VOTOU.getValue());
         }

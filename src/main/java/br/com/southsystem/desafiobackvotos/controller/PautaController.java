@@ -23,11 +23,13 @@ public class PautaController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody(required = false) PautaCommand command) {
         try {
-            service.open(command);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(service.open(command));
         } catch (Exception e) {
             log.error("Erro ao criar Pauta: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().body(e.getMessage());
+
+            return ResponseEntity.internalServerError()
+                    .body(e.getMessage());
         }
     }
 }

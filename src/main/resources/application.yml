@@ -11,9 +11,32 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-  rabbitmq:
-    host: localhost
-    port: 5672
-    username: geoinfra
-    password: geoinfra
+  kafka:
+    properties:
+      sasl:
+        jaas:
+          config: org.apache.kafka.common.security.scram.ScramLoginModule required
+            username="${CLOUDKARAFKA_USERNAME}" password="${CLOUDKARAFKA_PASSWORD}";
+        mechanism: SCRAM-SHA-256
+      security:
+        protocol: SASL_SSL
+    producer:
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      auto-offset-reset: latest
+      group-id: ${CLOUDKARAFKA_USERNAME}-consumers
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: sample.kafka
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    bootstrap-servers: ${CLOUDKARAFKA_BROKERS}
+
+topic.votacao: ${CLOUDKARAFKA_TOPIC_PREFIX}votacao
+CLOUDKARAFKA_BROKERS: tricycle-01.srvs.cloudkafka.com:9094,tricycle-02.srvs.cloudkafka.com:9094,tricycle-03.srvs.cloudkafka.com:9094
+CLOUDKARAFKA_USERNAME: mvcfg6d6
+CLOUDKARAFKA_PASSWORD: QIy1IJsc9L2mG09-xHe43vlemU5WxDff
+CLOUDKARAFKA_TOPIC_PREFIX: mvcfg6d6-
+
 integration.cpf.baseUrl: https://user-info.herokuapp.com/users

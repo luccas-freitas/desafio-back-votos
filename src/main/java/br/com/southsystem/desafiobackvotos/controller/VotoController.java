@@ -23,11 +23,13 @@ public class VotoController {
     @PostMapping
     public ResponseEntity<?> votar(@RequestBody VotoCommand command) {
         try {
-            service.votar(command);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(service.votar(command));
         } catch (Exception e) {
             log.error("Erro ao criar Voto: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().body(e.getMessage());
+
+            return ResponseEntity.internalServerError()
+                    .body(e.getMessage());
         }
     }
 }

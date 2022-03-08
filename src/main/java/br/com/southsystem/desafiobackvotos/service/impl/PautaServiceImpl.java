@@ -6,6 +6,7 @@ import br.com.southsystem.desafiobackvotos.model.types.ErrorTypes;
 import br.com.southsystem.desafiobackvotos.model.types.VotoType;
 import br.com.southsystem.desafiobackvotos.repository.PautaRepository;
 import br.com.southsystem.desafiobackvotos.repository.VotoRepository;
+import br.com.southsystem.desafiobackvotos.service.KafkaProducer;
 import br.com.southsystem.desafiobackvotos.service.PautaService;
 import br.com.southsystem.desafiobackvotos.view.PautaCommand;
 import org.springframework.scheduling.annotation.Async;
@@ -20,21 +21,24 @@ import java.util.concurrent.TimeUnit;
 public class PautaServiceImpl implements PautaService {
     private final PautaRepository repository;
     private final VotoRepository votoRepository;
+    private final KafkaProducer producer;
 
-    public PautaServiceImpl(PautaRepository repository, VotoRepository votoRepository) {
+    public PautaServiceImpl(PautaRepository repository, VotoRepository votoRepository, KafkaProducer producer) {
         this.repository = repository;
         this.votoRepository = votoRepository;
+        this.producer = producer;
     }
 
     @Override
-    public void open(PautaCommand command) {
+    public Pauta open(PautaCommand command) {
         Pauta pauta = repository.save(Pauta.from(command));
         this.run(pauta);
+        return pauta;
     }
 
     //Nova consulta para recuperar lista de votos
-    private void close(Long id) {
-        repository.save(
+    private Pauta close(Long id) {
+        return repository.save(
             repository.findById(id).map(pauta -> {
                 pauta.setQtdSim(this.contarVotos(pauta, VotoType.SIM));
                 pauta.setQtdNao(this.contarVotos(pauta, VotoType.NAO));
@@ -59,8 +63,10 @@ public class PautaServiceImpl implements PautaService {
     public void run(Pauta pauta) {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
-        scheduler.schedule(() ->
-            this.close(pauta.getId()),
+        scheduler.schedule(() -> {
+                Pauta updated = this.close(pauta.getId());
+                producer.send(updated);
+            },
             pauta.getTempoSessao(),
             TimeUnit.MINUTES
         );
