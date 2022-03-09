@@ -1,7 +1,7 @@
 # Desafio Técnico
-Swagger: http://localhost:8080/swagger-ui.html
-SonarCloud: https://sonarcloud.io/projects
-Kafka Manager: https://api.cloudkarafka.com/console/64f10474-a80b-4b2e-994e-0bf0a312bbd9/browser?topic=mvcfg6d6-votacao
+Swagger: http://localhost:8080/swagger-ui.html  
+SonarCloud: https://sonarcloud.io/projects  
+Kafka Manager: https://api.cloudkarafka.com/console/64f10474-a80b-4b2e-994e-0bf0a312bbd9/browser?topic=mvcfg6d6-votacao  
 
 ## Objetivo
 No cooperativismo, cada associado possui um voto e as decisões são tomadas em assembleias, por votação. A partir disso, você precisa criar uma solução back-end para gerenciar essas sessões de votação. Essa solução deve ser executada na nuvem e promover as seguintes funcionalidades através de uma API REST:
