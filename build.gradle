@@ -15,6 +15,14 @@ configurations {
 	}
 }
 
+jar {
+	manifest {
+		attributes (
+				'Main-Class': 'br.com.southsystem.desafiobackvotos.DesafioBackVotosApplication.java'
+		)
+	}
+}
+
 repositories {
 	mavenCentral()
 }
@@ -53,6 +61,6 @@ sonarqube {
 	properties {
 		property "sonar.projectKey", "luccas-freitas_desafio-back-votos"
 		property "sonar.organization", "luccas-freitas"
-		property "sonar.host.url", "https://sonarcloud.io"
+		property "sonar.host.url", "https:..sonarcloud.io"
 	}
 }
