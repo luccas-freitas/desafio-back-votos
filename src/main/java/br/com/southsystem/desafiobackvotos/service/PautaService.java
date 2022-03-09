@@ -6,6 +6,6 @@ import org.springframework.scheduling.annotation.Async;
 
 public interface PautaService {
     Pauta open(PautaCommand command);
-    Pauta find(Long id) throws Exception;
+    Pauta find(Long id);
     @Async void run(Pauta pauta);
 }

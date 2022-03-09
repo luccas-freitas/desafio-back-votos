@@ -26,45 +26,39 @@ public class VotoServiceImpl implements VotoService {
     }
 
     @Override
-    public Voto votar(VotoCommand command) throws Exception {
+    public Voto votar(VotoCommand command) {
         Pauta pauta = pautaService.find(command.getPautaId());
+        this.verificarVoto(command, pauta);
 
-        if (this.podeVotar(command, pauta)) {
-            return repository.save(Voto.from(command, pauta));
-        } else {
-            throw new InternalServerErrorException(ErrorTypes.ASSOCIADO_JA_VOTOU.getValue());
-        }
+        return repository.save(Voto.from(command, pauta));
     }
 
     /* Verificar se cpf está habilitado para votar;
-    * Evitar votos duplicados e
-    * Evitar pautas encerradas */
-    private boolean podeVotar(VotoCommand command, Pauta pauta) {
-        return associadoHabilitado(command) &&
-               associadoJaVotou(command) &&
-               pautaAberta(pauta);
+     * Evitar votos duplicados e
+     * Evitar pautas encerradas */
+    private void verificarVoto(VotoCommand command, Pauta pauta) {
+        this.associadoHabilitado(command);
+        this.associadoJaVotou(command);
+        this.pautaAberta(pauta);
     }
 
-    private boolean associadoHabilitado(VotoCommand command) {
+    private void associadoHabilitado(VotoCommand command) {
         CPFCommand response = cpfService.verify(command.getAssociado()).getBody();
         if (response != null && CPFType.UNABLE_TO_VOTE.equals(response.getStatus())) {
             throw new InternalServerErrorException(ErrorTypes.UNABLE_TO_VOTE.getValue());
         }
-        return true;
     }
 
-    private boolean associadoJaVotou(VotoCommand command) {
+    private void associadoJaVotou(VotoCommand command) {
         if (repository.existsByIdPautaIdAndIdAssociado(command.getPautaId(), command.getAssociado())) {
             throw new InternalServerErrorException(ErrorTypes.ASSOCIADO_JA_VOTOU.getValue());
         }
-        return true;
     }
 
-    private boolean pautaAberta(Pauta pauta) {
+    private void pautaAberta(Pauta pauta) {
         if (pauta.getDataFim() != null) {
             throw new InternalServerErrorException(ErrorTypes.PAUTA_ENCERRADA.getValue());
         }
-        return true;
     }
 
 }

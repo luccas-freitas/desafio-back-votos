@@ -4,5 +4,5 @@ import br.com.southsystem.desafiobackvotos.model.Voto;
 import br.com.southsystem.desafiobackvotos.view.VotoCommand;
 
 public interface VotoService {
-    Voto votar(VotoCommand command) throws Exception;
+    Voto votar(VotoCommand command);
 }

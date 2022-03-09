@@ -14,4 +14,13 @@ public class VotoCommand {
 
     @Schema(example = "SIM", description = "SIM / NAO")
     private VotoType votoType;
+    
+    public static VotoCommand from(Long pautaId, String associado, VotoType voto) {
+        VotoCommand command = new VotoCommand();
+        command.pautaId = pautaId;
+        command.associado = associado;
+        command.votoType = voto;
+
+        return command;
+    }
 }
