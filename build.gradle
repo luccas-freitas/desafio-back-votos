@@ -18,7 +18,7 @@ configurations {
 jar {
 	manifest {
 		attributes (
-				'Main-Class': 'br.com.southsystem.desafiobackvotos.DesafioBackVotosApplication.java'
+				'Main-Class': 'br.com.southsystem.desafiobackvotos.DesafioBackVotosApplication'
 		)
 	}
 }
